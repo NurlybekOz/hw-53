@@ -1,35 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import {useState} from "react";
+import './components/Task/Task.css'
+import Task from "./components/Task/Task.tsx";
+import AddTaskForm from "./components/AddTaskForm/AddTaskForm.tsx";
+import * as React from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface ITask {
+    task: string;
+    id: string;
 }
 
-export default App
+const App = () => {
+    const [tasks, setTasks] = useState<ITask[]>([
+        {task: 'Do homework', id: '1'},
+        {task: 'Buy Milk', id: '2'},
+        {task: 'Walk with dog', id: '3'},
+    ]);
+    const [newTask, setNewTask] = useState<string>('');
+
+
+    const deleteTask = (idTask: string) => {
+        setTasks(prevState => prevState.filter((task) => task.id !== idTask));
+    };
+    const addNewTask = () => {
+
+        if (newTask.trim() === "") {
+            return;
+        }
+        const newTaskObject: ITask = {
+            task: newTask,
+            id: String(new Date().getTime()),
+        };
+        setTasks(prevState =>[ ...prevState, newTaskObject]);
+        setNewTask('')
+    }
+    const taskInput = (e:React.ChangeEvent<HTMLInputElement>) => {
+        setNewTask(e.target.value);
+    }
+    return (
+        <>
+            <AddTaskForm addTaskBtn = {addNewTask}
+                         onTaskInputChange={taskInput}
+            />
+
+
+
+            {tasks.map((task) => (
+
+                <Task key = {task.id}
+                      task = {task.task}
+                      DeleteTaskBtn = {() => deleteTask(task.id)}
+                ></Task>
+            ))}
+        </>
+    )
+
+};
+
+export default App;
